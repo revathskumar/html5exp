@@ -1,0 +1,12 @@
+{
+  "name": "promise",
+  "version": "0.0.0",
+  "dependencies": {
+    "sass-bootstrap": "~3.0.0",
+    "modernizr": "~2.6.2",
+    "jquery": "~1.10.2",
+    "aplus.js": "https://raw.github.com/rhysbrettbowen/Aplus/master/aplus.js",
+    "react": "~0.10.0"
+  },
+  "devDependencies": {}
+}
