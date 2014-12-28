@@ -63,14 +63,16 @@ doubleClickStream.subscribe(function(){
 var refreshBtn = document.querySelector('.refresh');
 var refreshStream = Rx.Observable.fromEvent(refreshBtn, 'click');
 
-
-var requestStream = refreshStream
+var requestonRefreshStream = refreshStream
   .map(function(){
     var offset = Math.floor(Math.random()*500)
     return 'https://api.github.com/users?since='+offset
   });
 
-var resStream = requestStream
+var startupStream = Rx.Observable.just('https://api.github.com/users');
+var reqStream = Rx.Observable.merge(requestonRefreshStream, startupStream);
+
+var resStream = reqStream
   .flatMap(function(url) {
     return Rx.Observable.fromPromise($.getJSON(url));
   })
@@ -83,4 +85,5 @@ resStream.subscribe(function(response) {
     usersHolder.append($('<li/>').html(user['login']));
   });
 });
+
 
