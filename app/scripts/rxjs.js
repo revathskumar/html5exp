@@ -74,13 +74,25 @@ var resStream = reqStream
     return Rx.Observable.fromPromise($.getJSON(url));
   })
 
-resStream.subscribe(function(response) {
-  users = response.splice(0,3)
-  var usersHolder = $('.gh-users')
-  usersHolder.empty();
-  $(users).each(function(index, user) {
-    usersHolder.append($('<li/>').html(user['login']));
+var sug1Stream = resStream
+  .map(function(users) {
+    return users[Math.floor(Math.random()*users.length)];
   });
-});
+var sug2Stream = resStream
+  .map(function(users) {
+    return users[Math.floor(Math.random()*users.length)];
+  });
+var sug3Stream = resStream
+  .map(function(users) {
+    return users[Math.floor(Math.random()*users.length)];
+  });
 
+
+var appendLi = function(suggestion) {
+  $('.gh-users').append($('<li/>').html(suggestion['login']));
+};
+
+sug1Stream.subscribe(appendLi);
+sug2Stream.subscribe(appendLi);
+sug3Stream.subscribe(appendLi);
 
