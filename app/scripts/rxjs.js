@@ -59,7 +59,17 @@ doubleClickStream.subscribe(function(){
 //   e.stopPropagation();
 // });
 
-var requestStream = Rx.Observable.just('https://api.github.com/users')
+
+var refreshBtn = document.querySelector('.refresh');
+var refreshStream = Rx.Observable.fromEvent(refreshBtn, 'click');
+
+
+var requestStream = refreshStream
+  .map(function(){
+    var offset = Math.floor(Math.random()*500)
+    return 'https://api.github.com/users?since='+offset
+  });
+
 var resStream = requestStream
   .flatMap(function(url) {
     return Rx.Observable.fromPromise($.getJSON(url));
@@ -67,7 +77,10 @@ var resStream = requestStream
 
 resStream.subscribe(function(response) {
   users = response.splice(0,3)
+  var usersHolder = $('.gh-users')
+  usersHolder.empty();
   $(users).each(function(index, user) {
-    $('.gh-users').append($('<li/>').html(user['login']));
+    usersHolder.append($('<li/>').html(user['login']));
   });
 });
+
