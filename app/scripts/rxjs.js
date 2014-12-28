@@ -60,15 +60,7 @@ doubleClickStream.subscribe(function(){
 // });
 
 var requestStream = Rx.Observable.just('https://api.github.com/users')
-requestStream.subscribe(function(url){
-  var resStream = Rx.Observable.create(function(observer){
-    $.getJSON(url)
-      .done(function(response) { observer.onNext(response) })
-      .fail(function(response) { observer.onError(response) })
-      .always(function(){ observer.onCompleted() });
+var resMetaStream = requestStream
+  .map(function(url) {
+    return Rx.Observable.fromPromise($.getJSON(url));
   })
-  resStream.subscribe(function(response){
-    console.log(response)
-  });
-  // $.getJSON(url);
-})
