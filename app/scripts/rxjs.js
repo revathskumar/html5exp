@@ -63,14 +63,11 @@ doubleClickStream.subscribe(function(){
 var refreshBtn = document.querySelector('.refresh');
 var refreshStream = Rx.Observable.fromEvent(refreshBtn, 'click');
 
-var requestonRefreshStream = refreshStream
+var reqStream = refreshStream.startWith('startup click')
   .map(function(){
     var offset = Math.floor(Math.random()*500)
     return 'https://api.github.com/users?since='+offset
-  });
-
-var startupStream = Rx.Observable.just('https://api.github.com/users');
-var reqStream = Rx.Observable.merge(requestonRefreshStream, startupStream);
+  })
 
 var resStream = reqStream
   .flatMap(function(url) {
