@@ -6,7 +6,8 @@
     "modernizr": "~2.6.2",
     "jquery": "~1.10.2",
     "aplus.js": "https://raw.github.com/rhysbrettbowen/Aplus/master/aplus.js",
-    "react": "~0.10.0"
+    "react": "~0.10.0",
+    "rxjs": "~2.3.22"
   },
   "devDependencies": {}
 }
