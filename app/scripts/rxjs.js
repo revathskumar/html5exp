@@ -60,7 +60,14 @@ doubleClickStream.subscribe(function(){
 // });
 
 var requestStream = Rx.Observable.just('https://api.github.com/users')
-var resMetaStream = requestStream
-  .map(function(url) {
+var resStream = requestStream
+  .flatMap(function(url) {
     return Rx.Observable.fromPromise($.getJSON(url));
   })
+
+resStream.subscribe(function(response) {
+  users = response.splice(0,3)
+  $(users).each(function(index, user) {
+    $('.gh-users').append($('<li/>').html(user['login']));
+  });
+});
