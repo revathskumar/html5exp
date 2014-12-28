@@ -59,4 +59,16 @@ doubleClickStream.subscribe(function(){
 //   e.stopPropagation();
 // });
 
-
+var requestStream = Rx.Observable.just('https://api.github.com/users')
+requestStream.subscribe(function(url){
+  var resStream = Rx.Observable.create(function(observer){
+    $.getJSON(url)
+      .done(function(response) { observer.onNext(response) })
+      .fail(function(response) { observer.onError(response) })
+      .always(function(){ observer.onCompleted() });
+  })
+  resStream.subscribe(function(response){
+    console.log(response)
+  });
+  // $.getJSON(url);
+})
