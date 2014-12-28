@@ -61,12 +61,24 @@ doubleClickStream.subscribe(function(){
 
 
 var refreshBtn = document.querySelector('.refresh');
+var close1Btn = document.querySelector('.close1');
+var close2Btn = document.querySelector('.close2');
+var close3Btn = document.querySelector('.close3');
+
 var refreshStream = Rx.Observable.fromEvent(refreshBtn, 'click');
 
+var close1Stream = Rx.Observable.fromEvent(close1Btn, 'click');
+var close2Stream = Rx.Observable.fromEvent(close2Btn, 'click');
+var close3Stream = Rx.Observable.fromEvent(close3Btn, 'click');
+
 var reqStream = refreshStream.startWith('startup click')
-  .map(function(){
+  .map(function(e){
+    if(typeof e == 'object'){
+      e.preventDefault();
+    }
+    console.log(typeof e);
     var offset = Math.floor(Math.random()*500)
-    return 'https://api.github.com/users?since='+offset
+    return 'https://api.github.com/users'
   })
 
 var resStream = reqStream
@@ -74,25 +86,44 @@ var resStream = reqStream
     return Rx.Observable.fromPromise($.getJSON(url));
   })
 
-var sug1Stream = resStream
-  .map(function(users) {
+var createCloseStream = function(cs){
+  return cs.startWith('startup click')
+  .combineLatest(resStream, function(e, users){
+    if(typeof e == 'object'){
+      e.preventDefault();
+    }
     return users[Math.floor(Math.random()*users.length)];
-  });
-var sug2Stream = resStream
-  .map(function(users) {
-    return users[Math.floor(Math.random()*users.length)];
-  });
-var sug3Stream = resStream
-  .map(function(users) {
-    return users[Math.floor(Math.random()*users.length)];
-  });
-
-
-var appendLi = function(suggestion) {
-  $('.gh-users').append($('<li/>').html(suggestion['login']));
+  })
+  .merge(
+    refreshStream.map(function() { return null;})
+  )
+  .startWith(null);
 };
 
-sug1Stream.subscribe(appendLi);
-sug2Stream.subscribe(appendLi);
-sug3Stream.subscribe(appendLi);
+var sug1Stream = createCloseStream(close1Stream)
+var sug2Stream = createCloseStream(close2Stream)
+var sug3Stream = createCloseStream(close3Stream)
+
+var appendLi = function(suggestion, ele) {
+  if(suggestion == null) {
+    ele.addClass('force-hide');
+    ele.find('.login').empty()
+  }else{
+    ele.removeClass('force-hide');
+    ele.find('.login').html(suggestion['login']);
+  }
+}
+
+sug1Stream.subscribe(function(suggestion) {
+  // console.log(suggestion);
+  appendLi(suggestion, $('.gh-users .user1' ))
+});
+
+sug2Stream.subscribe(function(suggestion) {
+  appendLi(suggestion, $('.gh-users .user2' ))
+});
+
+sug3Stream.subscribe(function(suggestion) {
+  appendLi(suggestion, $('.gh-users .user3' ))
+});
 
